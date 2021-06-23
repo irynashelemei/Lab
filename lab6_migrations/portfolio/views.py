@@ -8,11 +8,10 @@ from datetime import date, datetime
 from flask import flash, redirect, render_template, request, session, url_for, jsonify
 from flask_mail import Mail, Message
 
-from . import app, db
 from .forms import *
 from .models import *
 # endregion
-
+from lab6_migrations.portfolio import app
 # region VARIABLES
 mail = Mail()
 csrf.init_app(app)
@@ -42,7 +41,7 @@ def index():
     return render_template(
         "index.html",
         menu=menu,
-        my_os=os.uname(),
+        my_os=os.name,
         user_agent=request.headers.get("User-Agent"),
         version=sys.version,
         time_now=datetime.now().strftime("%H:%M"),
@@ -56,7 +55,7 @@ def about():
     return render_template(
         "about.html",
         menu=menu,
-        my_os=os.uname(),
+        my_os=os.name,
         user_agent=request.headers.get("User-Agent"),
         version=sys.version,
         time_now=datetime.now().strftime("%H:%M"),
@@ -71,7 +70,7 @@ def portfolio():
     return render_template(
         "portfolio.html",
         menu=menu,
-        my_os=os.uname(),
+        my_os=os.name,
         user_agent=request.headers.get("User-Agent"),
         version=sys.version,
         time_now=datetime.now().strftime("%H:%M"),
@@ -137,7 +136,7 @@ def contact():
         menu=menu,
         form=form,
         reqMethod=request.method,
-        my_os=os.uname(),
+        my_os=os.name,
         user_agent=request.headers.get("User-Agent"),
         version=sys.version,
         time_now=datetime.now().strftime("%H:%M"),

@@ -1,43 +1,55 @@
+import json
+
 from flask import Flask, render_template
-from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import StringField, PasswordField
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, TextField
+from wtforms.fields.html5 import EmailField
 from wtforms.validators import InputRequired, Length, AnyOf
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "some_key"
-app.config["RECAPTCHA_PUBLIC_KEY"] = "your_key_here"
-app.config["RECAPTCHA_PRIVATE_KEY"] = "your_key_here"
 app.config["TESTING"] = True
+file_path = "./data.json"
 
 
-class LoginForm(FlaskForm):
-    username = StringField(
-        "username",
+class ContactForm(FlaskForm):
+    name = StringField(
+        "name",
         validators=[
-            InputRequired("A username is required!"),
-            Length(min=5, max=10, message="Must be from 5 to 10 chars")
+            InputRequired("A name is required!"),
+            Length(min=3, max=10, message="Must be from 3 to 10 chars")
         ]
     )
-    password = PasswordField(
-        "password",
+    email = EmailField(
+        "email",
         validators=[
-            InputRequired("Password is required!"),
-            AnyOf(values=["password", "secret"])
+            InputRequired("Email is required!"),
         ]
     )
-    recaptcha = RecaptchaField()
+    body = StringField(
+        "body",
+        validators=[
+            InputRequired("A body is required!")
+        ]
+    )
 
 
 @app.route("/form", methods=["GET", "POST"])
 def form():
-    login_form = LoginForm()
+    contact_form = ContactForm()
 
-    if login_form.validate_on_submit():
-        return (
-            f"<h1> username = {login_form.username.data} & password ="
-            f" {login_form.password.data}</h1>"
-        )
-    return render_template("form.html", form=login_form)
+    if contact_form.validate_on_submit():
+        data_s = json.dumps(
+                {
+                    "name": contact_form.name.data,
+                    "email": contact_form.email.data,
+                    "body": contact_form.body.data
+                }
+            )
+        with open(file_path, "a") as fp:
+            fp.write(data_s + "\n")
+        return data_s
+    return render_template("form.html", form=contact_form)
 
 
 if __name__ == '__main__':

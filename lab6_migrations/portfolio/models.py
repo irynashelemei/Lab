@@ -1,4 +1,4 @@
-from . import db
+from lab6_migrations.portfolio import db
 import enum
 from datetime import datetime
 
